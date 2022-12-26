@@ -32,7 +32,7 @@ jobs:
       env: 
         $SESSDATA: ${{ secrets.SESSDATA }} # Get site from secrets
       run: | 
-        python3 Download.py
+        python3 Download.py $SESSDATA
         cat log.log
         rm log.log
     - name: Commit # update log to Github
