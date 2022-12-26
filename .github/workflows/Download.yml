@@ -29,10 +29,8 @@ jobs:
         pip install requests
         pip install tqdm
     - name: Download
-      env: 
-        $SESSDATA: ${{ secrets.SESSDATA }} # Get site from secrets
       run: | 
-        python3 Download.py $SESSDATA
+        python3 Download.py ${{ secrets.SESSDATA }}
         cat log.log
         rm log.log
     - name: Commit # update log to Github
