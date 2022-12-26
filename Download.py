@@ -14,6 +14,8 @@ welcome = r'''______ _ _ _        _____                _        ______          
 
                                                                          -------- GamerNoTitle      
                                                                                                           '''
+print(welcome)
+
 def logger(log_level, log_file):
     logger = logging.getLogger()
     logger.setLevel(log_level)
@@ -33,6 +35,7 @@ log = logger('DEBUG', 'log.log')
 
 try:
     sessdata = os.environ.get('SESSDATA')
+    print(sessdata)
     os.mkdir('Emote')
 except FileExistsError:
     pass
@@ -47,8 +50,8 @@ for package in allPackages:
     if not os.path.exists(f'./Emote/{packageName}'): os.mkdir(f'./Emote/{packageName}')
     with tqdm(total=len(emotelist), desc=f'Downloading {packageName}') as bar:
         for emote in emotelist:
-            if not os.path.exists('./Emote/{packageName}/{emote["text"]}.png'):
-                with open(f'./Emote/{packageName}/{emote["text"]}.png', 'wb') as f:
+            if not os.path.exists(f'./Emote/{packageName}/{emote["text"]}.png'):
+                with open(f'./Emote/{packageName}/{emote["text"].replace("?", "？")}.png', 'wb') as f:
                     f.write(r.get(emote['url']).content)
             bar.update(1)
 print('Done!')
