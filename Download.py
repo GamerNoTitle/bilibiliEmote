@@ -39,6 +39,8 @@ try:
     os.mkdir('Emote')
 except FileExistsError:
     pass
+except IndexError:
+    print(sys.argv)
 panel = 'http://api.bilibili.com/x/emote/setting/panel?business=dynamic'
 panelInformation = json.loads(r.get(
     panel, headers={'cookie': f'SESSDATA={sessdata}'}).text)
