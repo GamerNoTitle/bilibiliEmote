@@ -1,1 +1,84 @@
+name: Download bilibili Emotes
 
+on: 
+  release:
+    types: [published]
+  push:
+    tags:
+    - 'v*'
+  #  branches: 
+  #    - master
+  schedule:
+    - cron: "0 0 * * *"
+  watch:
+    types: [started]
+   
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Set up Python # install python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install requests # install requests
+      run: |
+        pip install requests
+        pip install tqdm
+    - name: Download
+      env: 
+        $SESSDATA: ${{ secrets.SESSDATA }} # Get site from secrets
+      shell: python
+      run: | 
+        import requests as r
+        from tqdm import tqdm
+        import os
+        import sys
+        import json
+
+        welcome = r'''______ _ _ _        _____                _        ______                    _                 _           
+        | ___ (_) (_)      |  ___|              | |       |  _  \                  | |               | |          
+        | |_/ /_| |_ ______| |__ _ __ ___   ___ | |_ ___  | | | |_____      ___ __ | | ___   __ _  __| | ___ _ __ 
+        | ___ \ | | |______|  __| '_ ` _ \ / _ \| __/ _ \ | | | / _ \ \ /\ / / '_ \| |/ _ \ / _` |/ _` |/ _ \ '__|
+        | |_/ / | | |      | |__| | | | | | (_) | ||  __/ | |/ / (_) \ V  V /| | | | | (_) | (_| | (_| |  __/ |   
+        \____/|_|_|_|      \____/_| |_| |_|\___/ \__\___| |___/ \___/ \_/\_/ |_| |_|_|\___/ \__,_|\__,_|\___|_|   
+
+                                                                                 -------- GamerNoTitle      
+                                                                                                                  '''
+
+        try:
+            sessdata = os.environ.get('SESSDATA')
+            os.mkdir('Emote')
+        except IndexError:
+            print(f'Usage: python3 {__file__} SESSDATA')
+            os._exit(0)
+        except FileExistsError:
+            pass
+        panel = 'http://api.bilibili.com/x/emote/setting/panel?business=dynamic'
+        panelInformation = json.loads(r.get(
+            panel, headers={'cookie': f'SESSDATA={sessdata}'}).text)
+        allPackages = panelInformation['data']['all_packages']
+        for package in allPackages:
+            packageName = package['text']
+            emotelist = package['emote']
+            if packageName == '颜文字': continue
+            if not os.path.exists(f'./Emote/{packageName}'): os.mkdir(f'./Emote/{packageName}')
+            with tqdm(total=len(emotelist), desc=f'Downloading {packageName}') as bar:
+                for emote in emotelist:
+                    if not os.path.exists('./Emote/{packageName}/{emote["text"]}.png'):
+                        with open(f'./Emote/{packageName}/{emote["text"]}.png', 'wb') as f:
+                            f.write(r.get(emote['url']).content)
+                    bar.update(1)
+        print('Done!')
+    - name: Commit # update log to Github
+      run: |
+        git config --global user.email GamerNoTitle@outlook.com
+        git config --global user.name GamerNoTitle
+        git add .
+        git commit -m "New emotes" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
