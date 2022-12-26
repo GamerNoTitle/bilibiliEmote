@@ -34,7 +34,7 @@ def logger(log_level, log_file):
 log = logger('DEBUG', 'log.log')
 
 try:
-    sessdata = os.environ.get('SESSDATA')
+    sessdata = sys.argv[1]
     print(sessdata)
     os.mkdir('Emote')
 except FileExistsError:
