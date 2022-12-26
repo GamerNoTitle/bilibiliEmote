@@ -60,7 +60,11 @@ jobs:
         panel = 'http://api.bilibili.com/x/emote/setting/panel?business=dynamic'
         panelInformation = json.loads(r.get(
             panel, headers={'cookie': f'SESSDATA={sessdata}'}).text)
-        allPackages = panelInformation['data']['all_packages']
+        try:
+          allPackages = panelInformation['data']['all_packages']
+        except:
+          print(panelInformation)
+          os._exit(0)
         for package in allPackages:
             packageName = package['text']
             emotelist = package['emote']
