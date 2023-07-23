@@ -48,7 +48,7 @@ allPackages = panelInformation['data']['all_packages']
 for package in allPackages:
     packageName = package['text']
     emotelist = package['emote']
-    if packageName == '颜文字': continue
+    if packageName == '颜文字' or packageName == '小黄脸': continue
     if not os.path.exists(f'./Emote/{packageName}'): os.mkdir(f'./Emote/{packageName}')
     with tqdm(total=len(emotelist), desc=f'Downloading {packageName}') as bar:
         for emote in emotelist:
